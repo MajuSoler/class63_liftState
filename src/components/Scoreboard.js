@@ -19,6 +19,14 @@ export default function Scoreboard() {
 
   const [sort, setSort] = useState("name");
 
+  const [newUser, setNewUser] = useState("");
+
+  const sorted_players = [...players].sort(
+    sort === "name" ? compare_name : compare_score
+  );
+
+  // setPlayers(sorted_players);
+
   //   const displayMessage = (message) => {
   //     console.log("I was clicked", message);
   //   };
@@ -33,12 +41,8 @@ export default function Scoreboard() {
       //     return player;
       //   }
     });
-    const sorted_players = [...updatedList].sort(
-      sort === "name" ? compare_name : compare_score
-    );
-    setPlayers(sorted_players);
 
-    // setPlayers(updatedList);
+    setPlayers(updatedList);
 
     // //Find player to be updated
     // const playerToBeUpdated = players.find((player) => {
@@ -61,19 +65,34 @@ export default function Scoreboard() {
     // console.log("DropDown was changed", value);
   };
 
-  useEffect(() => {
-    const sorted_players = [...players].sort(
-      sort === "name" ? compare_name : compare_score
-    );
-    setPlayers(sorted_players);
-  }, [sort]);
+  // useEffect(() => {
+  //   const sorted_players = [...players].sort(
+  //     sort === "name" ? compare_name : compare_score
+  //   );
+  //   setPlayers(sorted_players);
+  // }, [sort]);
 
   // console.log(sort, "this is the sorting method");
+  const inputChange = (value) => {
+    setNewUser(value);
+  };
+
+  const addPlayer = () => {
+    const newPlayerObject = {
+      id: Math.random(),
+      name: newUser,
+      score: 0,
+    };
+    // console.log(newPlayerObject, "this is the new player");
+    setPlayers([...players, newPlayerObject]);
+    setNewUser("");
+  };
+  // console.log(players, "this is palyers");
 
   return (
     <div>
       <div>
-        {players.map((player) => {
+        {sorted_players.map((player) => {
           return (
             <Player
               key={player.id}
@@ -96,6 +115,17 @@ export default function Scoreboard() {
           <option value="name">Name </option>
           <option value="score">Score</option>
         </select>
+      </div>
+      <div>
+        <input
+          type={"text"}
+          value={newUser}
+          placeholder={"Write your name"}
+          onChange={(event) => {
+            inputChange(event.target.value);
+          }}
+        />
+        <button onClick={addPlayer}>Click</button>
       </div>
     </div>
   );
