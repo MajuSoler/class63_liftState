@@ -1,5 +1,14 @@
+import { useEffect, useState } from "react";
+
 import Player from "./Player";
-import { useState } from "react";
+
+function compare_score(player_a, player_b) {
+  return player_b.score - player_a.score;
+}
+
+function compare_name(player_a, player_b) {
+  return player_a.name.localeCompare(player_b.name);
+}
 
 export default function Scoreboard() {
   const [players, setPlayers] = useState([
@@ -7,6 +16,8 @@ export default function Scoreboard() {
     { id: 2, name: "Karla", score: 0 },
     { id: 3, name: "Swen", score: 0 },
   ]);
+
+  const [sort, setSort] = useState("name");
 
   //   const displayMessage = (message) => {
   //     console.log("I was clicked", message);
@@ -22,8 +33,12 @@ export default function Scoreboard() {
       //     return player;
       //   }
     });
+    const sorted_players = [...updatedList].sort(
+      sort === "name" ? compare_name : compare_score
+    );
+    setPlayers(sorted_players);
 
-    setPlayers(updatedList);
+    // setPlayers(updatedList);
 
     // //Find player to be updated
     // const playerToBeUpdated = players.find((player) => {
@@ -41,20 +56,47 @@ export default function Scoreboard() {
     // console.log(updatedScore, "this is updated");
   };
 
+  const addSortingMethod = (value) => {
+    setSort(value);
+    // console.log("DropDown was changed", value);
+  };
+
+  useEffect(() => {
+    const sorted_players = [...players].sort(
+      sort === "name" ? compare_name : compare_score
+    );
+    setPlayers(sorted_players);
+  }, [sort]);
+
+  // console.log(sort, "this is the sorting method");
+
   return (
     <div>
-      {players.map((player) => {
-        return (
-          <Player
-            key={player.id}
-            id={player.id}
-            name={player.name}
-            score={player.score}
-            updateScore={updateScore}
-            // clickFunction={displayMessage}
-          />
-        );
-      })}
+      <div>
+        {players.map((player) => {
+          return (
+            <Player
+              key={player.id}
+              id={player.id}
+              name={player.name}
+              score={player.score}
+              updateScore={updateScore}
+              // clickFunction={displayMessage}
+            />
+          );
+        })}
+      </div>
+      <div>
+        <p>Select a sorting method</p>
+        <select
+          onChange={(e) => {
+            addSortingMethod(e.target.value);
+          }}
+        >
+          <option value="name">Name </option>
+          <option value="score">Score</option>
+        </select>
+      </div>
     </div>
   );
 }
